@@ -1,5 +1,7 @@
 [![Bolt.new: AI-Powered Full-Stack Web Development in the Browser](./public/social_preview_index.jpg)](https://bolt.new)
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/OpenCoq/openbolt.new)
+
 # Bolt.new: AI-Powered Full-Stack Web Development in the Browser
 
 Bolt.new is an AI-powered web development agent that allows you to prompt, run, edit, and deploy full-stack applications directly from your browser—no local setup required. If you're here to build your own AI-powered web dev agent using the Bolt open source codebase, [click here to get started!](./CONTRIBUTING.md)
@@ -20,6 +22,30 @@ Claude, v0, etc are incredible- but you can't install packages, run backends or 
 Whether you’re an experienced developer, a PM or designer, Bolt.new allows you to build production-grade full-stack applications with ease.
 
 For developers interested in building their own AI-powered development tools with WebContainers, check out the open-source Bolt codebase in this repo!
+
+## Development
+
+### Quick Start with Gitpod
+
+Get a fully configured development environment in your browser:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/OpenCoq/openbolt.new)
+
+Gitpod will automatically:
+- Set up Node.js 20.15.1 and pnpm 9.4.0
+- Install all dependencies 
+- Start the development server
+- Open the app in your browser
+
+### Local Development
+
+1. Clone the repository
+2. Install dependencies: `pnpm install`
+3. Start development server: `pnpm run dev`
+
+Requirements:
+- Node.js 20.15.1+
+- pnpm 9.4.0+
 
 ## Tips and Tricks
 
