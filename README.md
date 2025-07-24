@@ -23,6 +23,15 @@ Whether you’re an experienced developer, a PM or designer, Bolt.new allows you
 
 For developers interested in building their own AI-powered development tools with WebContainers, check out the open-source Bolt codebase in this repo!
 
+## Technical Documentation
+
+📚 **[Technical Architecture Documentation](./docs/README.md)** - Comprehensive technical documentation including:
+- System architecture overview with Mermaid diagrams
+- Component structure and relationships
+- Data flow patterns and state management
+- Deployment architecture and infrastructure
+- Module dependencies and build strategy
+
 ## Development
 
 ### Quick Start with Gitpod
