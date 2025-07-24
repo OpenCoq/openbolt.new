@@ -9,7 +9,8 @@ export default defineConfig((config) => {
   return {
     build: {
       target: 'esnext',
-      // Increase chunk size warning limit to reduce noise for intentionally large chunks like language parsers
+
+      // increase chunk size warning limit to reduce noise for intentionally large chunks like language parsers
       chunkSizeWarningLimit: 700,
     },
     plugins: [
