@@ -1,7 +1,9 @@
 import { useStore } from '@nanostores/react';
+import { ClientOnly } from 'remix-utils/client-only';
 import { chatStore } from '~/lib/stores/chat';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { classNames } from '~/utils/classNames';
+import { CognitiveAgentStatus } from '~/components/CognitiveAgentStatus';
 
 interface HeaderActionButtonsProps {}
 
@@ -12,7 +14,10 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
   const canHideChat = showWorkbench || !showChat;
 
   return (
-    <div className="flex">
+    <div className="flex items-center gap-4">
+      <ClientOnly fallback={<div />}>
+        {() => <CognitiveAgentStatus compact />}
+      </ClientOnly>
       <div className="flex border border-bolt-elements-borderColor rounded-md overflow-hidden">
         <Button
           active={showChat}

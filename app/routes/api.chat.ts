@@ -3,6 +3,7 @@ import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS } from '~/lib/.server/llm/constants';
 import { CONTINUE_PROMPT } from '~/lib/.server/llm/prompts';
 import { streamText, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
 import SwitchableStream from '~/lib/.server/llm/switchable-stream';
+import { cognitiveAgentIntegration } from '~/lib/cognitive/integration';
 
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
@@ -14,10 +15,18 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
   const stream = new SwitchableStream();
 
   try {
+    // Enhance messages through cognitive agent network
+    const enhancedMessages = await cognitiveAgentIntegration.enhanceMessages(messages);
+    
     const options: StreamingOptions = {
       toolChoice: 'none',
       onFinish: async ({ text: content, finishReason }) => {
         if (finishReason !== 'length') {
+          // Share successful interaction knowledge with agents
+          await cognitiveAgentIntegration.shareKnowledge(
+            `Successful completion: ${content.slice(0, 100)}...`,
+            'heuristic'
+          );
           return stream.close();
         }
 
@@ -29,16 +38,16 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
 
         console.log(`Reached max token limit (${MAX_TOKENS}): Continuing message (${switchesLeft} switches left)`);
 
-        messages.push({ role: 'assistant', content });
-        messages.push({ role: 'user', content: CONTINUE_PROMPT });
+        enhancedMessages.push({ role: 'assistant', content });
+        enhancedMessages.push({ role: 'user', content: CONTINUE_PROMPT });
 
-        const result = await streamText(messages, context.cloudflare.env, options);
+        const result = await streamText(enhancedMessages, context.cloudflare.env, options);
 
         return stream.switchSource(result.toAIStream());
       },
     };
 
-    const result = await streamText(messages, context.cloudflare.env, options);
+    const result = await streamText(enhancedMessages, context.cloudflare.env, options);
 
     stream.switchSource(result.toAIStream());
 
