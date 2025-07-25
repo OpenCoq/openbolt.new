@@ -27,15 +27,15 @@ const initialState: CognitiveAgentState = {
     activeAgents: 0,
     messageQueue: 0,
     averageResponseTime: 0,
-    collaborationScore: 0
+    collaborationScore: 0,
   },
   lastUpdate: 0,
-  isEnhancingMessages: false
+  isEnhancingMessages: false,
 };
 
 export const cognitiveAgentStore = map<CognitiveAgentState>(initialState);
 
-// Actions to update the store
+// actions to update the store
 export const cognitiveAgentActions = {
   updateNetworkStatus: (status: CognitiveAgentState['networkStatus']) => {
     cognitiveAgentStore.setKey('networkStatus', status);
@@ -62,22 +62,22 @@ export const cognitiveAgentActions = {
       agents: data.agents,
       metrics: data.metrics,
       lastUpdate: Date.now(),
-      isEnhancingMessages: cognitiveAgentStore.get().isEnhancingMessages
+      isEnhancingMessages: cognitiveAgentStore.get().isEnhancingMessages,
     });
   },
 
   resetState: () => {
     cognitiveAgentStore.set(initialState);
-  }
+  },
 };
 
-// Utility functions
+// utility functions
 export const getCognitiveAgentSummary = () => {
   const state = cognitiveAgentStore.get();
   return {
     isActive: state.networkStatus === 'active',
     agentCount: state.agents.length,
     collaborationScore: Math.round(state.metrics.collaborationScore * 100),
-    status: state.networkStatus
+    status: state.networkStatus,
   };
 };

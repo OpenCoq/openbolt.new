@@ -1,9 +1,9 @@
 /**
  * Core types for cognitive grammar system
- * Defines semantic understanding and contextual relationships
+ * Defines semantic understanding and contextual relationships.
  */
 
-// Cognitive Grammar Core Concepts
+// cognitive Grammar Core Concepts
 export interface SemanticNode {
   id: string;
   type: 'concept' | 'relation' | 'entity' | 'action';
@@ -42,7 +42,7 @@ export interface ExecutionMemory {
   learnings: string[];
 }
 
-// Grammar Rule System
+// grammar Rule System
 export interface GrammarRule {
   id: string;
   pattern: string; // regex or template pattern

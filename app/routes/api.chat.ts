@@ -15,17 +15,17 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
   const stream = new SwitchableStream();
 
   try {
-    // Enhance messages through cognitive agent network
+    // enhance messages through cognitive agent network
     const enhancedMessages = await cognitiveAgentIntegration.enhanceMessages(messages);
-    
+
     const options: StreamingOptions = {
       toolChoice: 'none',
       onFinish: async ({ text: content, finishReason }) => {
         if (finishReason !== 'length') {
-          // Share successful interaction knowledge with agents
+          // share successful interaction knowledge with agents
           await cognitiveAgentIntegration.shareKnowledge(
             `Successful completion: ${content.slice(0, 100)}...`,
-            'heuristic'
+            'heuristic',
           );
           return stream.close();
         }

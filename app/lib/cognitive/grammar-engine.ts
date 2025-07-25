@@ -1,6 +1,6 @@
 /**
  * Core cognitive grammar engine implementation
- * Provides semantic understanding and contextual reasoning
+ * Provides semantic understanding and contextual reasoning.
  */
 
 import type {
@@ -12,7 +12,7 @@ import type {
   ParsedInput,
   Token,
   IntentModel,
-  RuleCondition
+  RuleCondition,
 } from '~/types/cognitive-grammar';
 
 export class CognitiveGrammarEngine implements GrammarEngine {
@@ -23,16 +23,16 @@ export class CognitiveGrammarEngine implements GrammarEngine {
     this.initializeBuiltInRules();
   }
 
-  parseInput(input: string, context: CognitiveContext): ParsedInput {
+  parseInput(input: string, _context: CognitiveContext): ParsedInput {
     const tokens = this.tokenize(input);
-    const semanticNodes = this.extractSemanticNodes(tokens, context);
-    const intent = this.deriveIntent(tokens, semanticNodes, context);
+    const semanticNodes = this.extractSemanticNodes(tokens, _context);
+    const intent = this.deriveIntent(tokens, semanticNodes, _context);
 
     return {
       text: input,
       tokens,
       semanticNodes,
-      intent
+      intent,
     };
   }
 
@@ -44,13 +44,14 @@ export class CognitiveGrammarEngine implements GrammarEngine {
       if (this.evaluateConditions(rule.conditions, input)) {
         try {
           const pattern = new RegExp(rule.pattern, 'gi');
+
           if (pattern.test(result)) {
-            // Create a mock context for the transform function
+            // create a mock context for the transform function
             const mockContext: CognitiveContext = {
               projectStructure: input.semanticNodes,
               codeRelations: [],
               userIntent: input.intent,
-              executionHistory: []
+              executionHistory: [],
             };
             result = rule.transform(result, mockContext);
           }
@@ -63,14 +64,14 @@ export class CognitiveGrammarEngine implements GrammarEngine {
     return result;
   }
 
-  updateContext(result: string, context: CognitiveContext): CognitiveContext {
-    const newNodes = this.extractSemanticNodes(this.tokenize(result), context);
-    const updatedStructure = this.mergeSemanticNodes(context.projectStructure, newNodes);
-    
+  updateContext(result: string, _context: CognitiveContext): CognitiveContext {
+    const newNodes = this.extractSemanticNodes(this.tokenize(result), _context);
+    const updatedStructure = this.mergeSemanticNodes(_context.projectStructure, newNodes);
+
     return {
-      ...context,
+      ..._context,
       projectStructure: updatedStructure,
-      codeRelations: this.inferRelations(updatedStructure)
+      codeRelations: this.inferRelations(updatedStructure),
     };
   }
 
@@ -79,49 +80,54 @@ export class CognitiveGrammarEngine implements GrammarEngine {
   }
 
   removeRule(ruleId: string): void {
-    this.rules = this.rules.filter(rule => rule.id !== ruleId);
+    this.rules = this.rules.filter((rule) => rule.id !== ruleId);
   }
 
   private tokenize(input: string): Token[] {
     const tokens: Token[] = [];
-    
-    // Simple tokenization patterns
+
+    // simple tokenization patterns
     const patterns = [
-      { type: 'keyword' as const, regex: /\b(create|update|delete|modify|add|remove|build|test|run|install|import|export|function|class|const|let|var|if|else|for|while|return)\b/g },
+      {
+        type: 'keyword' as const,
+        regex:
+          /\b(create|update|delete|modify|add|remove|build|test|run|install|import|export|function|class|const|let|var|if|else|for|while|return)\b/g,
+      },
       { type: 'identifier' as const, regex: /\b[a-zA-Z_$][a-zA-Z0-9_$]*\b/g },
       { type: 'operator' as const, regex: /[+\-*/%=<>!&|^~]+/g },
       { type: 'literal' as const, regex: /"[^"]*"|'[^']*'|`[^`]*`|\b\d+(\.\d+)?\b/g },
-      { type: 'comment' as const, regex: /\/\/.*$|\/\*[\s\S]*?\*\//gm }
+      { type: 'comment' as const, regex: /\/\/.*$|\/\*[\s\S]*?\*\//gm },
     ];
 
-    let position = 0;
     const processed = new Set<number>();
 
     for (const { type, regex } of patterns) {
       regex.lastIndex = 0;
+
       let match;
-      
+
       while ((match = regex.exec(input)) !== null) {
         const start = match.index;
         const end = start + match[0].length;
-        
-        // Avoid overlapping tokens
+
+        // avoid overlapping tokens
         let overlap = false;
+
         for (let i = start; i < end; i++) {
           if (processed.has(i)) {
             overlap = true;
             break;
           }
         }
-        
+
         if (!overlap) {
           tokens.push({
             type,
             value: match[0],
-            position: start,
-            semanticRole: this.getSemanticRole(match[0], type)
+            _position: start,
+            semanticRole: this.getSemanticRole(match[0], type),
           });
-          
+
           for (let i = start; i < end; i++) {
             processed.add(i);
           }
@@ -132,23 +138,23 @@ export class CognitiveGrammarEngine implements GrammarEngine {
     return tokens.sort((a, b) => a.position - b.position);
   }
 
-  private extractSemanticNodes(tokens: Token[], context: CognitiveContext): SemanticNode[] {
+  private extractSemanticNodes(tokens: Token[], _context: CognitiveContext): SemanticNode[] {
     const nodes: SemanticNode[] = [];
-    const existingConcepts = new Set(context.projectStructure.map(n => n.content));
+    const existingConcepts = new Set(_context.projectStructure.map((n) => n.content));
 
-    // Extract entities and concepts from tokens
+    // extract entities and concepts from tokens
     for (const token of tokens) {
       if (token.type === 'identifier' && !existingConcepts.has(token.value)) {
         nodes.push({
           id: `concept_${token.value}_${Date.now()}`,
           type: 'concept',
           content: token.value,
-          metadata: { 
+          metadata: {
             tokenType: token.type,
             position: token.position,
-            semanticRole: token.semanticRole
+            semanticRole: token.semanticRole,
           },
-          connections: []
+          connections: [],
         });
       }
 
@@ -157,11 +163,11 @@ export class CognitiveGrammarEngine implements GrammarEngine {
           id: `action_${token.value}_${Date.now()}`,
           type: 'action',
           content: token.value,
-          metadata: { 
+          metadata: {
             tokenType: token.type,
-            position: token.position 
+            position: token.position,
           },
-          connections: []
+          connections: [],
         });
       }
     }
@@ -169,31 +175,36 @@ export class CognitiveGrammarEngine implements GrammarEngine {
     return nodes;
   }
 
-  private deriveIntent(tokens: Token[], semanticNodes: SemanticNode[], context: CognitiveContext): IntentModel {
-    // Extract action words
+  private deriveIntent(tokens: Token[], _semanticNodes: SemanticNode[], _context: CognitiveContext): IntentModel {
+    // extract action words
     const actions = tokens
-      .filter(t => t.type === 'keyword' && ['create', 'update', 'delete', 'modify', 'add', 'remove', 'build', 'test', 'run'].includes(t.value))
-      .map(t => t.value);
+      .filter(
+        (t) =>
+          t.type === 'keyword' &&
+          ['create', 'update', 'delete', 'modify', 'add', 'remove', 'build', 'test', 'run'].includes(t.value),
+      )
+      .map((t) => t.value);
 
-    // Extract entities (identifiers that might be files, functions, etc.)
-    const entities = tokens
-      .filter(t => t.type === 'identifier')
-      .map(t => t.value);
+    // extract entities (identifiers that might be files, functions, etc.)
+    const entities = tokens.filter((t) => t.type === 'identifier').map((t) => t.value);
 
-    // Simple goal derivation
+    // simple goal derivation
     let goal = 'General development task';
+
     if (actions.length > 0) {
       const primaryAction = actions[0];
       const primaryEntity = entities.length > 0 ? entities[0] : 'code';
       goal = `${primaryAction} ${primaryEntity}`;
     }
 
-    // Basic constraints detection
+    // basic constraints detection
     const constraints: string[] = [];
-    if (tokens.some(t => t.value.includes('test'))) {
+
+    if (tokens.some((t) => t.value.includes('test'))) {
       constraints.push('Ensure tests pass');
     }
-    if (tokens.some(t => t.value.includes('component'))) {
+
+    if (tokens.some((t) => t.value.includes('component'))) {
       constraints.push('Follow component patterns');
     }
 
@@ -202,19 +213,19 @@ export class CognitiveGrammarEngine implements GrammarEngine {
       entities,
       actions,
       constraints,
-      confidence: Math.max(0.5, Math.min(0.9, (actions.length + entities.length) / 5)) // Better confidence scoring
+      confidence: Math.max(0.5, Math.min(0.9, (actions.length + entities.length) / 5)), // better confidence scoring
     };
   }
 
   private evaluateConditions(conditions: RuleCondition[], input: ParsedInput): boolean {
-    return conditions.every(condition => {
+    return conditions.every((condition) => {
       try {
-        // Create a mock context for condition evaluation
+        // create a mock context for condition evaluation
         const mockContext: CognitiveContext = {
           projectStructure: input.semanticNodes,
           codeRelations: [],
           userIntent: input.intent,
-          executionHistory: []
+          executionHistory: [],
         };
         return condition.check(mockContext);
       } catch (error) {
@@ -226,7 +237,7 @@ export class CognitiveGrammarEngine implements GrammarEngine {
 
   private mergeSemanticNodes(existing: SemanticNode[], newNodes: SemanticNode[]): SemanticNode[] {
     const merged = [...existing];
-    const existingIds = new Set(existing.map(n => n.content));
+    const existingIds = new Set(existing.map((n) => n.content));
 
     for (const newNode of newNodes) {
       if (!existingIds.has(newNode.content)) {
@@ -240,30 +251,31 @@ export class CognitiveGrammarEngine implements GrammarEngine {
   private inferRelations(nodes: SemanticNode[]): SemanticConnection[] {
     const relations: SemanticConnection[] = [];
 
-    // Simple relation inference based on proximity and semantic similarity
+    // simple relation inference based on proximity and semantic similarity
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const nodeA = nodes[i];
         const nodeB = nodes[j];
 
-        // Infer dependency if one is an action and other is a concept
+        // infer dependency if one is an action and other is a concept
         if (nodeA.type === 'action' && nodeB.type === 'concept') {
           relations.push({
             targetId: nodeB.id,
             type: 'dependency',
             strength: 0.6,
-            metadata: { inferredFrom: 'action-concept pattern' }
+            metadata: { inferredFrom: 'action-concept pattern' },
           });
         }
 
-        // Infer similarity based on content similarity
+        // infer similarity based on content similarity
         const similarity = this.calculateSimilarity(nodeA.content, nodeB.content);
+
         if (similarity > 0.5) {
           relations.push({
             targetId: nodeB.id,
             type: 'similarity',
             strength: similarity,
-            metadata: { inferredFrom: 'content similarity' }
+            metadata: { inferredFrom: 'content similarity' },
           });
         }
       }
@@ -275,25 +287,40 @@ export class CognitiveGrammarEngine implements GrammarEngine {
   private calculateSimilarity(a: string, b: string): number {
     const setA = new Set(a.toLowerCase().split(''));
     const setB = new Set(b.toLowerCase().split(''));
-    const intersection = new Set([...setA].filter(x => setB.has(x)));
+    const intersection = new Set([...setA].filter((x) => setB.has(x)));
     const union = new Set([...setA, ...setB]);
+
     return intersection.size / union.size;
   }
 
   private getSemanticRole(value: string, type: Token['type']): string | undefined {
     if (type === 'keyword') {
       const actionWords = ['create', 'update', 'delete', 'modify', 'add', 'remove'];
-      if (actionWords.includes(value)) return 'action';
-      
+
+      if (actionWords.includes(value)) {
+        return 'action';
+      }
+
       const structureWords = ['function', 'class', 'const', 'let', 'var'];
-      if (structureWords.includes(value)) return 'structure';
+
+      if (structureWords.includes(value)) {
+        return 'structure';
+      }
     }
 
     if (type === 'identifier') {
-      // Simple heuristics for semantic roles
-      if (value.endsWith('Component') || value.endsWith('Widget')) return 'component';
-      if (value.endsWith('Service') || value.endsWith('Manager')) return 'service';
-      if (value.startsWith('is') || value.startsWith('has')) return 'predicate';
+      // simple heuristics for semantic roles
+      if (value.endsWith('Component') || value.endsWith('Widget')) {
+        return 'component';
+      }
+
+      if (value.endsWith('Service') || value.endsWith('Manager')) {
+        return 'service';
+      }
+
+      if (value.startsWith('is') || value.startsWith('has')) {
+        return 'predicate';
+      }
     }
 
     return undefined;
@@ -308,14 +335,15 @@ export class CognitiveGrammarEngine implements GrammarEngine {
         conditions: [
           {
             type: 'context',
-            check: (context) => context.userIntent.actions.includes('create')
-          }
+            check: (_context) => _context.userIntent.actions.includes('create'),
+          },
         ],
-        transform: (input, context) => {
+        transform: (input, _context) => {
           const entityMatch = input.match(/create\s+(\w+)/i);
           const componentName = entityMatch ? entityMatch[1] : 'Component';
+
           return `Create a ${componentName} component with proper TypeScript types, following React best practices, including error boundaries and accessibility features.`;
-        }
+        },
       },
       {
         id: 'enhance-file-operations',
@@ -324,12 +352,12 @@ export class CognitiveGrammarEngine implements GrammarEngine {
         conditions: [
           {
             type: 'semantic',
-            check: (context) => context.userIntent.entities.some(e => e.includes('file') || e.includes('File'))
-          }
+            check: (_context) => _context.userIntent.entities.some((e) => e.includes('file') || e.includes('File')),
+          },
         ],
-        transform: (input, context) => {
+        transform: (input, _context) => {
           return `${input} Ensure proper file structure, imports, and exports. Follow project conventions and add appropriate error handling.`;
-        }
+        },
       },
       {
         id: 'add-testing-context',
@@ -338,13 +366,13 @@ export class CognitiveGrammarEngine implements GrammarEngine {
         conditions: [
           {
             type: 'context',
-            check: (context) => context.userIntent.goal.includes('test')
-          }
+            check: (_context) => _context.userIntent.goal.includes('test'),
+          },
         ],
-        transform: (input, context) => {
+        transform: (input, _context) => {
           return `${input} Include comprehensive test coverage with unit tests, integration tests where appropriate, and ensure tests follow established patterns in the codebase.`;
-        }
-      }
+        },
+      },
     ];
   }
 }

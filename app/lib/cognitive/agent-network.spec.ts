@@ -1,6 +1,6 @@
 /**
  * Tests for the agent network coordinator
- * Validates distributed agent communication and coordination
+ * Validates distributed agent communication and coordination.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -68,13 +68,13 @@ describe('AgentNetworkCoordinator', () => {
         type: 'user_request',
         content: 'create a new React component',
         metadata: {},
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       const outputs = await coordinator.processInput(input);
 
       expect(outputs.length).toBeGreaterThan(0);
-      expect(outputs.some(output => output.type === 'response')).toBe(true);
+      expect(outputs.some((output) => output.type === 'response')).toBe(true);
     });
 
     it('should handle code change inputs', async () => {
@@ -82,7 +82,7 @@ describe('AgentNetworkCoordinator', () => {
         type: 'code_change',
         content: 'function newFunction() { return "test"; }',
         metadata: { file: 'test.ts' },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       const outputs = await coordinator.processInput(input);
@@ -95,16 +95,16 @@ describe('AgentNetworkCoordinator', () => {
         type: 'user_request',
         content: 'create component',
         metadata: {},
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
-      // Mock the grammar agent's perceive method to return enhanced content
+      // mock the grammar agent's perceive method to return enhanced content
       vi.spyOn(grammarAgent, 'perceive').mockResolvedValue({
         understood: true,
         confidence: 0.8,
         semanticNodes: [],
         missingInfo: [],
-        suggestedActions: ['Create a component with proper TypeScript types and React best practices']
+        suggestedActions: ['Create a component with proper TypeScript types and React best practices'],
       });
 
       const outputs = await coordinator.processInput(input);
@@ -127,7 +127,7 @@ describe('AgentNetworkCoordinator', () => {
         type: 'notification' as const,
         content: 'System update available',
         metadata: {},
-        urgency: 'low' as const
+        urgency: 'low' as const,
       };
 
       const receiveMessageSpy1 = vi.spyOn(grammarAgent, 'receiveMessage').mockResolvedValue();
@@ -152,7 +152,7 @@ describe('AgentNetworkCoordinator', () => {
         content: 'React components should use TypeScript interfaces for props',
         confidence: 0.9,
         context: ['react', 'typescript'],
-        source: 'best_practices'
+        source: 'best_practices',
       };
 
       const receiveMessageSpy1 = vi.spyOn(grammarAgent, 'receiveMessage').mockResolvedValue();
@@ -160,8 +160,8 @@ describe('AgentNetworkCoordinator', () => {
 
       coordinator.shareKnowledge(knowledge);
 
-      // Knowledge sharing should trigger message broadcasting
-      await new Promise(resolve => setTimeout(resolve, 10)); // Allow async operations
+      // knowledge sharing should trigger message broadcasting
+      await new Promise((resolve) => setTimeout(resolve, 10)); // allow async operations
 
       expect(receiveMessageSpy1).toHaveBeenCalled();
       expect(receiveMessageSpy2).toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('AgentNetworkCoordinator', () => {
         outcome: 'Component created successfully',
         feedback: 'Type safety improved',
         success: true,
-        lessons: ['Always use TypeScript interfaces for React props']
+        lessons: ['Always use TypeScript interfaces for React props'],
       };
 
       const shareKnowledgeSpy = vi.spyOn(coordinator, 'shareKnowledge');
@@ -186,7 +186,7 @@ describe('AgentNetworkCoordinator', () => {
         content: experience.lessons.join(', '),
         confidence: 0.8,
         context: [experience.situation],
-        source: grammarAgent.id
+        source: grammarAgent.id,
       });
     });
   });
@@ -196,14 +196,14 @@ describe('AgentNetworkCoordinator', () => {
       coordinator.registerAgent(grammarAgent);
       coordinator.registerAgent(contextAgent);
 
-      // Simulate message exchange
+      // simulate message exchange
       await coordinator.broadcastMessage({
         fromAgent: grammarAgent.id,
         toAgent: 'all',
         type: 'request',
         content: 'Need context information',
         metadata: {},
-        urgency: 'medium'
+        urgency: 'medium',
       });
 
       const metrics = coordinator.getNetworkMetrics();
@@ -216,14 +216,14 @@ describe('AgentNetworkCoordinator', () => {
       coordinator.registerAgent(grammarAgent);
       coordinator.registerAgent(contextAgent);
 
-      // Set agents to different states
+      // set agents to different states
       grammarAgent.status = 'thinking';
       contextAgent.status = 'idle';
 
       const metrics = coordinator.getNetworkMetrics();
 
       expect(metrics.totalAgents).toBe(2);
-      expect(metrics.activeAgents).toBe(1); // Only thinking agent is considered active
+      expect(metrics.activeAgents).toBe(1); // only thinking agent is considered active
     });
   });
 
@@ -231,19 +231,19 @@ describe('AgentNetworkCoordinator', () => {
     it('should handle agent errors gracefully', async () => {
       coordinator.registerAgent(grammarAgent);
 
-      // Mock an agent that throws an error
+      // mock an agent that throws an error
       vi.spyOn(grammarAgent, 'perceive').mockRejectedValue(new Error('Agent error'));
 
       const input: AgentInput = {
         type: 'user_request',
         content: 'test input',
         metadata: {},
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       const outputs = await coordinator.processInput(input);
 
-      // Should not throw, but should handle the error gracefully
+      // should not throw, but should handle the error gracefully
       expect(outputs).toBeDefined();
     });
 
@@ -251,21 +251,21 @@ describe('AgentNetworkCoordinator', () => {
       coordinator.registerAgent(grammarAgent);
       coordinator.registerAgent(contextAgent);
 
-      // Mock one agent to fail and another to succeed
+      // mock one agent to fail and another to succeed
       vi.spyOn(grammarAgent, 'perceive').mockRejectedValue(new Error('Grammar agent error'));
       vi.spyOn(contextAgent, 'perceive').mockResolvedValue({
         understood: true,
         confidence: 0.7,
         semanticNodes: [],
         missingInfo: [],
-        suggestedActions: ['Context analysis completed']
+        suggestedActions: ['Context analysis completed'],
       });
 
       const input: AgentInput = {
         type: 'user_request',
         content: 'test input',
         metadata: {},
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       const outputs = await coordinator.processInput(input);

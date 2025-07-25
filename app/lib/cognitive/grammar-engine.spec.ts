@@ -1,6 +1,6 @@
 /**
  * Tests for the cognitive grammar engine
- * Validates semantic understanding and rule application
+ * Validates semantic understanding and rule application.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -21,9 +21,9 @@ describe('CognitiveGrammarEngine', () => {
         entities: [],
         actions: [],
         constraints: [],
-        confidence: 0
+        confidence: 0,
       },
-      executionHistory: []
+      executionHistory: [],
     };
   });
 
@@ -36,8 +36,8 @@ describe('CognitiveGrammarEngine', () => {
       expect(result.tokens[0]).toEqual({
         type: 'keyword',
         value: 'create',
-        position: 0,
-        semanticRole: 'action'
+        _position: 0,
+        semanticRole: 'action',
       });
     });
 
@@ -45,9 +45,9 @@ describe('CognitiveGrammarEngine', () => {
       const input = 'create a TodoComponent';
       const result = engine.parseInput(input, mockContext);
 
-      expect(result.semanticNodes.length).toBeGreaterThanOrEqual(2);
-      expect(result.semanticNodes.find(n => n.content === 'create')).toBeDefined();
-      expect(result.semanticNodes.find(n => n.content === 'TodoComponent')).toBeDefined();
+      expect(result._semanticNodes.length).toBeGreaterThanOrEqual(2);
+      expect(result._semanticNodes.find((n) => n.content === 'create')).toBeDefined();
+      expect(result._semanticNodes.find((n) => n.content === 'TodoComponent')).toBeDefined();
     });
 
     it('should derive intent correctly', () => {
@@ -79,14 +79,14 @@ describe('CognitiveGrammarEngine', () => {
         conditions: [
           {
             type: 'context',
-            check: () => true
-          }
+            check: () => true,
+          },
         ],
-        transform: (input) => `${input} with comprehensive testing`
+        transform: (input) => `${input} with comprehensive testing`,
       };
 
       engine.addRule(customRule);
-      
+
       const input = 'test function';
       const parsed = engine.parseInput(input, mockContext);
       const enhanced = engine.applyRules(parsed);
@@ -102,14 +102,14 @@ describe('CognitiveGrammarEngine', () => {
         conditions: [
           {
             type: 'context',
-            check: () => false // Always fail
-          }
+            check: () => false, // always fail
+          },
         ],
-        transform: (input) => `${input} SHOULD_NOT_APPEAR`
+        transform: (input) => `${input} SHOULD_NOT_APPEAR`,
       };
 
       engine.addRule(customRule);
-      
+
       const input = 'create something';
       const parsed = engine.parseInput(input, mockContext);
       const enhanced = engine.applyRules(parsed);
@@ -119,7 +119,7 @@ describe('CognitiveGrammarEngine', () => {
   });
 
   describe('updateContext', () => {
-    it('should update context with new semantic understanding', () => {
+    it('should update _context with new semantic understanding', () => {
       const result = 'function calculateTotal() { return 42; }';
       const updatedContext = engine.updateContext(result, mockContext);
 
@@ -135,17 +135,18 @@ describe('CognitiveGrammarEngine', () => {
         pattern: 'test',
         priority: 1,
         conditions: [],
-        transform: (input) => input
+        transform: (input) => input,
       };
 
       engine.addRule(rule);
-      // Rule should be added (internal state, can't directly test but can test its effect)
-      
+
+      // rule should be added (internal state, can't directly test but can test its effect)
+
       const input = 'test';
       const parsed = engine.parseInput(input, mockContext);
       const result = engine.applyRules(parsed);
-      
-      // Should not throw an error
+
+      // should not throw an error
       expect(result).toBeDefined();
     });
 
@@ -155,16 +156,16 @@ describe('CognitiveGrammarEngine', () => {
         pattern: 'remove.*me',
         priority: 1,
         conditions: [],
-        transform: () => 'REMOVED_RULE_APPLIED'
+        transform: () => 'REMOVED_RULE_APPLIED',
       };
 
       engine.addRule(rule);
       engine.removeRule('removable-rule');
-      
+
       const input = 'remove me';
       const parsed = engine.parseInput(input, mockContext);
       const result = engine.applyRules(parsed);
-      
+
       expect(result).not.toContain('REMOVED_RULE_APPLIED');
     });
   });
@@ -174,8 +175,8 @@ describe('CognitiveGrammarEngine', () => {
       const input = 'MyComponent SomeWidget';
       const result = engine.parseInput(input, mockContext);
 
-      const componentToken = result.tokens.find(t => t.value === 'MyComponent');
-      const widgetToken = result.tokens.find(t => t.value === 'SomeWidget');
+      const componentToken = result.tokens.find((t) => t.value === 'MyComponent');
+      const widgetToken = result.tokens.find((t) => t.value === 'SomeWidget');
 
       expect(componentToken?.semanticRole).toBe('component');
       expect(widgetToken?.semanticRole).toBe('component');
@@ -185,8 +186,8 @@ describe('CognitiveGrammarEngine', () => {
       const input = 'UserService DataManager';
       const result = engine.parseInput(input, mockContext);
 
-      const serviceToken = result.tokens.find(t => t.value === 'UserService');
-      const managerToken = result.tokens.find(t => t.value === 'DataManager');
+      const serviceToken = result.tokens.find((t) => t.value === 'UserService');
+      const managerToken = result.tokens.find((t) => t.value === 'DataManager');
 
       expect(serviceToken?.semanticRole).toBe('service');
       expect(managerToken?.semanticRole).toBe('service');
@@ -196,8 +197,8 @@ describe('CognitiveGrammarEngine', () => {
       const input = 'isValid hasPermission';
       const result = engine.parseInput(input, mockContext);
 
-      const isToken = result.tokens.find(t => t.value === 'isValid');
-      const hasToken = result.tokens.find(t => t.value === 'hasPermission');
+      const isToken = result.tokens.find((t) => t.value === 'isValid');
+      const hasToken = result.tokens.find((t) => t.value === 'hasPermission');
 
       expect(isToken?.semanticRole).toBe('predicate');
       expect(hasToken?.semanticRole).toBe('predicate');

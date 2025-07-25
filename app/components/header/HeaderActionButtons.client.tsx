@@ -15,9 +15,7 @@ export function HeaderActionButtons({}: HeaderActionButtonsProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <ClientOnly fallback={<div />}>
-        {() => <CognitiveAgentStatus compact />}
-      </ClientOnly>
+      <ClientOnly fallback={<div />}>{() => <CognitiveAgentStatus compact />}</ClientOnly>
       <div className="flex border border-bolt-elements-borderColor rounded-md overflow-hidden">
         <Button
           active={showChat}
