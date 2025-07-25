@@ -62,7 +62,7 @@ export class GrammarAgent extends BaseAgent implements IGrammarAgent {
   async reason(perception: Perception): Promise<Reasoning> {
     const steps = [];
 
-    if (perception._semanticNodes.some((node) => node.type === 'action')) {
+    if (perception.semanticNodes && perception.semanticNodes.some((node) => node.type === 'action')) {
       steps.push({
         id: 'enhance_intent',
         description: 'Enhance user intent with semantic understanding',
@@ -221,7 +221,7 @@ export class ContextAgent extends BaseAgent implements IContextAgent {
       confidence: 0.8,
     });
 
-    if (perception._semanticNodes.some((node) => node.type === 'entity')) {
+    if (perception.semanticNodes && perception.semanticNodes.some((node) => node.type === 'entity')) {
       steps.push({
         id: 'track_entities',
         description: 'Track mentioned entities in project _context',
@@ -310,7 +310,7 @@ export class PlanningAgent extends BaseAgent implements IPlanningAgent {
   async reason(perception: Perception): Promise<Reasoning> {
     const steps = [];
 
-    if (perception._semanticNodes.some((node) => node.type === 'action')) {
+    if (perception.semanticNodes && perception.semanticNodes.some((node) => node.type === 'action')) {
       steps.push({
         id: 'decompose_task',
         description: 'Break down the main task into subtasks',
@@ -451,16 +451,18 @@ export class ExecutionAgent extends BaseAgent implements IExecutionAgent {
     const steps = [];
 
     // create execution steps based on perceived actions
-    for (const node of perception._semanticNodes) {
-      if (node.type === 'action') {
-        steps.push({
-          id: `execute_${node.content}`,
-          description: `Execute ${node.content} action`,
-          action: { type: 'validate', parameters: { action: node.content } } as AgentAction, // use valid AgentAction type
-          preconditions: [],
-          expectedOutcome: `Successful ${node.content} execution`,
-          confidence: 0.8,
-        });
+    if (perception.semanticNodes) {
+      for (const node of perception.semanticNodes) {
+        if (node.type === 'action') {
+          steps.push({
+            id: `execute_${node.content}`,
+            description: `Execute ${node.content} action`,
+            action: { type: 'validate', parameters: { action: node.content } } as AgentAction, // use valid AgentAction type
+            preconditions: [],
+            expectedOutcome: `Successful ${node.content} execution`,
+            confidence: 0.8,
+          });
+        }
       }
     }
 

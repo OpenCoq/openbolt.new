@@ -45,9 +45,9 @@ describe('CognitiveGrammarEngine', () => {
       const input = 'create a TodoComponent';
       const result = engine.parseInput(input, mockContext);
 
-      expect(result._semanticNodes.length).toBeGreaterThanOrEqual(2);
-      expect(result._semanticNodes.find((n) => n.content === 'create')).toBeDefined();
-      expect(result._semanticNodes.find((n) => n.content === 'TodoComponent')).toBeDefined();
+      expect(result.semanticNodes.length).toBeGreaterThanOrEqual(2);
+      expect(result.semanticNodes.find((n) => n.content === 'create')).toBeDefined();
+      expect(result.semanticNodes.find((n) => n.content === 'TodoComponent')).toBeDefined();
     });
 
     it('should derive intent correctly', () => {
