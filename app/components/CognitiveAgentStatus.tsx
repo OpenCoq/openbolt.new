@@ -1,6 +1,6 @@
 /**
  * Cognitive Agent Network Status Component
- * Displays real-time status of the distributed agentic cognitive grammar system
+ * Displays real-time status of the distributed agentic cognitive grammar system.
  */
 
 import { useStore } from '@nanostores/react';
@@ -21,10 +21,11 @@ export const CognitiveAgentStatus = memo<CognitiveAgentStatusProps>(({ className
       const response = await fetch('/api/cognitive-agents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'status' })
+        body: JSON.stringify({ action: 'status' }),
       });
-      
-      const result = await response.json() as { success: boolean; data?: any };
+
+      const result = (await response.json()) as { success: boolean; data?: any };
+
       if (result.success && result.data) {
         cognitiveAgentActions.updateFullState(result.data);
       }
@@ -36,29 +37,50 @@ export const CognitiveAgentStatus = memo<CognitiveAgentStatusProps>(({ className
 
   useEffect(() => {
     fetchStatus();
-    
-    // Poll for updates every 30 seconds
+
+    // poll for updates every 30 seconds
     const interval = setInterval(fetchStatus, 30000);
+
     return () => clearInterval(interval);
   }, [fetchStatus]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-400';
-      case 'idle': return 'text-yellow-400';
-      case 'error': return 'text-red-400';
-      case 'initializing': return 'text-blue-400';
-      default: return 'text-gray-400';
+      case 'active': {
+        return 'text-green-400';
+      }
+      case 'idle': {
+        return 'text-yellow-400';
+      }
+      case 'error': {
+        return 'text-red-400';
+      }
+      case 'initializing': {
+        return 'text-blue-400';
+      }
+      default: {
+        return 'text-gray-400';
+      }
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return '🟢';
-      case 'idle': return '🟡';  
-      case 'error': return '🔴';
-      case 'initializing': return '🔵';
-      default: return '⚪';
+      case 'active': {
+        return '🟢';
+      }
+      case 'idle': {
+        return '🟡';
+      }
+      case 'error': {
+        return '🔴';
+      }
+      case 'initializing': {
+        return '🔵';
+      }
+      default: {
+        return '⚪';
+      }
     }
   };
 
@@ -68,13 +90,9 @@ export const CognitiveAgentStatus = memo<CognitiveAgentStatusProps>(({ className
         <span className="text-xs" title="Cognitive Agent Network">
           {getStatusIcon(state.networkStatus)}
         </span>
-        <span className={`text-xs font-mono ${getStatusColor(state.networkStatus)}`}>
-          {state.agents.length} agents
-        </span>
+        <span className={`text-xs font-mono ${getStatusColor(state.networkStatus)}`}>{state.agents.length} agents</span>
         {summary.collaborationScore > 0 && (
-          <span className="text-xs text-gray-400">
-            {summary.collaborationScore}% collab
-          </span>
+          <span className="text-xs text-gray-400">{summary.collaborationScore}% collab</span>
         )}
       </div>
     );
@@ -117,12 +135,19 @@ export const CognitiveAgentStatus = memo<CognitiveAgentStatusProps>(({ className
           {state.agents.map((agent) => (
             <div key={agent.id} className="flex items-center justify-between py-1">
               <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${
-                  agent.status === 'idle' ? 'bg-green-400' :
-                  agent.status === 'thinking' ? 'bg-yellow-400' :
-                  agent.status === 'acting' ? 'bg-blue-400' :
-                  agent.status === 'error' ? 'bg-red-400' : 'bg-gray-400'
-                }`} />
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    agent.status === 'idle'
+                      ? 'bg-green-400'
+                      : agent.status === 'thinking'
+                        ? 'bg-yellow-400'
+                        : agent.status === 'acting'
+                          ? 'bg-blue-400'
+                          : agent.status === 'error'
+                            ? 'bg-red-400'
+                            : 'bg-gray-400'
+                  }`}
+                />
                 <span className="text-xs text-white font-mono">{agent.type}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -143,9 +168,7 @@ export const CognitiveAgentStatus = memo<CognitiveAgentStatusProps>(({ className
         </div>
       )}
 
-      <div className="mt-3 text-xs text-gray-500">
-        Last updated: {new Date(state.lastUpdate).toLocaleTimeString()}
-      </div>
+      <div className="mt-3 text-xs text-gray-500">Last updated: {new Date(state.lastUpdate).toLocaleTimeString()}</div>
     </div>
   );
 });

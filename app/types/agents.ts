@@ -1,12 +1,12 @@
 /**
  * Agent system types for distributed agentic network
- * Defines specialized AI agents that work together
+ * Defines specialized AI agents that work together.
  */
 
 import type { CognitiveContext, SemanticNode, GrammarRule } from './cognitive-grammar';
 import type { BoltAction } from './actions';
 
-// Base Agent Interface
+// base Agent Interface
 export interface Agent {
   id: string;
   name: string;
@@ -14,28 +14,28 @@ export interface Agent {
   capabilities: AgentCapability[];
   status: AgentStatus;
   context: CognitiveContext;
-  
-  // Core agent methods
+
+  // core agent methods
   perceive(input: AgentInput): Promise<Perception>;
   reason(perception: Perception): Promise<Reasoning>;
   act(reasoning: Reasoning): Promise<AgentOutput>;
-  
-  // Communication methods
+
+  // communication methods
   sendMessage(targetAgent: string, message: AgentMessage): Promise<void>;
   receiveMessage(message: AgentMessage): Promise<void>;
-  
-  // Learning methods
+
+  // learning methods
   updateKnowledge(experience: Experience): void;
   shareKnowledge(knowledge: Knowledge): void;
 }
 
-export type AgentType = 
-  | 'grammar'      // Understands syntax and semantics
-  | 'context'      // Maintains project understanding
-  | 'planning'     // Breaks down complex tasks
-  | 'execution'    // Executes specific actions
-  | 'coordination' // Manages agent interactions
-  | 'learning';    // Improves system over time
+export type AgentType =
+  | 'grammar' // understands syntax and semantics
+  | 'context' // maintains project understanding
+  | 'planning' // breaks down complex tasks
+  | 'execution' // executes specific actions
+  | 'coordination' // manages agent interactions
+  | 'learning'; // improves system over time
 
 export interface AgentCapability {
   name: string;
@@ -129,7 +129,7 @@ export interface Knowledge {
   source: string;
 }
 
-// Specialized Agent Interfaces
+// specialized Agent Interfaces
 export interface GrammarAgent extends Agent {
   type: 'grammar';
   grammarRules: GrammarRule[];
@@ -161,7 +161,7 @@ export interface ExecutionAgent extends Agent {
   rollbackChanges(checkpoint: string): Promise<boolean>;
 }
 
-// Supporting Types
+// supporting Types
 interface Warning {
   name: string;
   message: string;
