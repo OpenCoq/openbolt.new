@@ -16,9 +16,9 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
   const stream = new SwitchableStream();
 
   try {
-    // Check if API key is available
+    // check if API key is available
     if (!hasAPIKey(context.cloudflare.env)) {
-      // Return a helpful error message when API key is missing
+      // return a helpful error message when API key is missing
       const errorMessage = `
 # API Configuration Required
 
@@ -42,7 +42,7 @@ While the chat feature requires an API key, you can still:
 The cognitive agent network is still operational and can enhance your requests even without the chat API.
       `.trim();
 
-      // Create a readable stream with the error message
+      // create a readable stream with the error message
       const encoder = new TextEncoder();
       const readable = new ReadableStream({
         start(controller) {
