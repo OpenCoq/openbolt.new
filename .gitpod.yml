@@ -21,6 +21,8 @@ tasks:
       nvm use 20.15.1
       npm install -g pnpm@9.4.0
     init: |
+      # Change to repository directory
+      cd openbolt.new
       # Install project dependencies
       pnpm install
       # Create .env.local file if it doesn't exist
@@ -28,7 +30,8 @@ tasks:
         cp .env.local.example .env.local
       fi
     command: |
-      # Start development server
+      # Change to repository directory and start development server
+      cd openbolt.new
       pnpm run dev
 
 # Configure ports
