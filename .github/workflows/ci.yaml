@@ -3,7 +3,7 @@ name: 'Cognitive Ecosystem: Issue Generation Meta-Framework'
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
